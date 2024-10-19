@@ -43,7 +43,7 @@ struct InAppBrowserView: UIViewRepresentable {
             // Handle actions after navigation if needed
         }
         
-        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        private func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             if navigationAction.navigationType == .linkActivated {
                 if let url = navigationAction.request.url, url.host != self.parent.url.host {
                     UIApplication.shared.open(url)
