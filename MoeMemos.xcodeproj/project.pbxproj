@@ -93,6 +93,7 @@
 		31EE785629B83D1B005F62D0 /* LazyImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31EE785529B83D1B005F62D0 /* LazyImageProvider.swift */; };
 		31EE785F29B9E6F4005F62D0 /* Highlightr in Frameworks */ = {isa = PBXBuildFile; productRef = 31EE785E29B9E6F4005F62D0 /* Highlightr */; };
 		31EE786129B9F3A2005F62D0 /* Highlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31EE786029B9F3A2005F62D0 /* Highlighter.swift */; };
+		B0640C952CC43C5C0089DF6F /* InAppBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0640C942CC43C5C0089DF6F /* InAppBrowserView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -210,6 +211,7 @@
 		19FC1C7D290DA6E90078A7F2 /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
 		31EE785529B83D1B005F62D0 /* LazyImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyImageProvider.swift; sourceTree = "<group>"; };
 		31EE786029B9F3A2005F62D0 /* Highlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Highlighter.swift; sourceTree = "<group>"; };
+		B0640C942CC43C5C0089DF6F /* InAppBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppBrowserView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -396,6 +398,7 @@
 		19F31BF828C3E286000C5207 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B0640C942CC43C5C0089DF6F /* InAppBrowserView.swift */,
 				1919FBE229CF6BDD00FEF570 /* ArchivedMemoCard.swift */,
 				192DF0F228C78BAD0077E785 /* ArchivedMemosList.swift */,
 				1934C77B2921670600A169EC /* Attachment.swift */,
@@ -656,6 +659,7 @@
 				31EE786129B9F3A2005F62D0 /* Highlighter.swift in Sources */,
 				194B273128C3973400A48675 /* MoeMemosApp.swift in Sources */,
 				19C569AA29125BB200745F9D /* ResourceManager.swift in Sources */,
+				B0640C952CC43C5C0089DF6F /* InAppBrowserView.swift in Sources */,
 				195E5D6B28C704AC00784EF5 /* Date.swift in Sources */,
 				19F31BFB28C3E9B2000C5207 /* Memo.swift in Sources */,
 				19C569A42912493A00745F9D /* ArchivedMemoListViewModel.swift in Sources */,

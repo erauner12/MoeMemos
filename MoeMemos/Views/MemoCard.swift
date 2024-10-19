@@ -9,22 +9,25 @@ import SwiftUI
 import UniformTypeIdentifiers
 import MarkdownUI
 import Models
+import WebKit
 
 @MainActor
 struct MemoCard: View {
     let memo: Memo
     let defaultMemoVisilibity: MemoVisibility?
-    
+
     @Environment(MemosViewModel.self) private var memosViewModel: MemosViewModel
     @Environment(\.openURL) private var openURL
     @State private var showingEdit = false
     @State private var showingDeleteConfirmation = false
-    
+    @State private var showingInAppBrowser = false
+    @State private var inAppBrowserURL: URL?
+
     init(_ memo: Memo, defaultMemoVisibility: MemoVisibility) {
         self.memo = memo
         self.defaultMemoVisilibity = defaultMemoVisibility
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -64,6 +67,17 @@ struct MemoCard: View {
         }
         .sheet(isPresented: $showingEdit) {
             MemoInput(memo: memo)
+        }
+        .sheet(isPresented: $showingInAppBrowser) {
+            if let url = inAppBrowserURL {
+                NavigationView {
+                    InAppBrowserView(url: url, isPresented: $showingInAppBrowser)
+                        .navigationBarTitle(Text(url.host ?? ""), displayMode: .inline)
+                        .navigationBarItems(trailing: Button("Done") {
+                            showingInAppBrowser = false
+                        })
+                }
+            }
         }
         .confirmationDialog("memo.delete.confirm", isPresented: $showingDeleteConfirmation, titleVisibility: .visible) {
             Button("memo.action.ok", role: .destructive) {
@@ -112,8 +126,9 @@ struct MemoCard: View {
         }
 
         Button {
-            if let url = URL(string: "https://workmemos.erauner.synology.me/m/\(memo.remoteId ?? "")") {
-                openURL(url)
+            if let uid = memo.remoteId, let url = URL(string: "https://workmemos.erauner.synology.me/m/\(uid)") {
+                inAppBrowserURL = url
+                showingInAppBrowser = true
             }
         } label: {
             Label("memo.open_in_browser", systemImage: "safari")
@@ -138,7 +153,7 @@ struct MemoCard: View {
             Label("memo.delete", systemImage: "trash")
         })
     }
-    
+
     private func toggleTaskItem(_ configuration: TaskListMarkerConfiguration) async {
         do {
             guard var node = configuration.node else { return }
