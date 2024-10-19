@@ -182,7 +182,7 @@ struct MemoCard: View {
         errorMessage = nil
         do {
             let fetchedMemo = try await memosViewModel.getMemo(remoteId: remoteId)
-            guard let uid = fetchedMemo.remoteId else {
+            guard let uid = fetchedMemo.uid else {
                 errorMessage = "Memo UID not found"
                 isLoading = false
                 return
