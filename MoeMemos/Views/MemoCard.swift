@@ -71,7 +71,7 @@ struct MemoCard: View {
         .sheet(isPresented: $showingInAppBrowser) {
             if let url = inAppBrowserURL {
                 NavigationView {
-                    InAppBrowserView(url: url, isPresented: $showingInAppBrowser)
+                    WebViewContainer(url: url, isPresented: $showingInAppBrowser)
                         .edgesIgnoringSafeArea(.all)
                         .navigationBarTitle(Text(url.host ?? ""), displayMode: .inline)
                         .navigationBarItems(trailing: Button("Done") {

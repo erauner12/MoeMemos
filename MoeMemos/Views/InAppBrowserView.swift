@@ -33,6 +33,7 @@ struct InAppBrowserView: UIViewRepresentable {
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             // Handle actions after navigation if needed
         }
+        
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             if navigationAction.navigationType == .linkActivated {
                 if let url = navigationAction.request.url, url.host != self.parent.url.host {
@@ -44,10 +45,15 @@ struct InAppBrowserView: UIViewRepresentable {
             decisionHandler(.allow)
         }
     }
+}
+
+struct WebViewContainer: View {
+    let url: URL
+    @Binding var isPresented: Bool
 
     var body: some View {
         VStack {
-            WebViewContainer(webView: makeUIView(context: UIViewRepresentableContext<<#Representable: UIViewRepresentable#>>(self)))
+            InAppBrowserView(url: url, isPresented: $isPresented)
             HStack {
                 Spacer()
                 CloseButton(action: {
@@ -57,36 +63,26 @@ struct InAppBrowserView: UIViewRepresentable {
             .padding()
         }
     }
+}
 
-    struct WebViewContainer: UIViewRepresentable {
-        let webView: WKWebView
+struct CloseButton: View {
+    let action: () -> Void
 
-        func makeUIView(context: Context) -> WKWebView {
-            webView
-        }
-
-        func updateUIView(_ view: WKWebView, context: Context) {}
-    }
-
-    struct CloseButton: View {
-        let action: () -> Void
-
-        var body: some View {
-            Button(action: action) {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.title)
-                    .foregroundColor(.white)
-                    .background(
-                        Circle()
-                            .fill(Color.secondary.opacity(0.7))
-                    )
-            }
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "xmark.circle.fill")
+                .font(.title)
+                .foregroundColor(.white)
+                .background(
+                    Circle()
+                        .fill(Color.secondary.opacity(0.7))
+                )
         }
     }
 }
 
 struct InAppBrowserView_Previews: PreviewProvider {
     static var previews: some View {
-        InAppBrowserView(url: URL(string: "https://example.com")!, isPresented: .constant(true))
+        WebViewContainer(url: URL(string: "https://example.com")!, isPresented: .constant(true))
     }
 }
