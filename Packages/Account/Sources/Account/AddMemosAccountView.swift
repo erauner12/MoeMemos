@@ -111,24 +111,14 @@ struct AddMemosAccountView: View {
                 throw MoeMemosError.invalidParams
             }
             
-            switch server {
-            case .v1(version: _):
-                try await accountViewModel.loginMemosV1(hostURL: hostURL, username: username, password: password)
-            case .v0(version: _):
-                try await accountViewModel.loginMemosV0(hostURL: hostURL, username: username, password: password)
-            }
+            try await accountViewModel.loginMemosV1(hostURL: hostURL, username: username, password: password)
         } else if loginMethod == .accessToken {
             let accessToken = accessToken.trimmingCharacters(in: .whitespaces)
             if accessToken.isEmpty {
                 throw MoeMemosError.invalidParams
             }
             
-            switch server {
-            case .v1(version: _):
-                try await accountViewModel.loginMemosV1(hostURL: hostURL, accessToken: accessToken)
-            case .v0(version: _):
-                try await accountViewModel.loginMemosV0(hostURL: hostURL, accessToken: accessToken)
-            }
+            try await accountViewModel.loginMemosV1(hostURL: hostURL, accessToken: accessToken)
         }
         dismiss()
     }
