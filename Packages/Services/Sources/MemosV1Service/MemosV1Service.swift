@@ -39,6 +39,12 @@ public final class MemosV1Service: RemoteService {
     public func memoVisibilities() -> [MemoVisibility] {
         return [.private, .local, .public]
     }
+
+    public func getMemo(remoteId: String) async throws -> Memo {
+        let resp = try await client.MemoService_GetMemo(path: .init(name_4: getName(remoteId: remoteId)))
+        let data = try resp.ok.body.json
+        return data.toMemo(host: hostURL)
+    }
     
     public func listMemos() async throws -> [Memo] {
         guard let userId = userId else { throw MoeMemosError.notLogin }

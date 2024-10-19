@@ -26,6 +26,14 @@ import Factory
     private(set) var matrix: [DailyUsageStat] = DailyUsageStat.initialMatrix
     private(set) var inited = false
     private(set) var loading = false
+
+    @MainActor
+    func getMemo(remoteId: String) async throws -> Memo {
+        guard let service = service as? MemosV1Service else {
+            throw MoeMemosError.unsupportedVersion
+        }
+        return try await service.getMemo(remoteId: remoteId)
+    }
     
     @MainActor
     func loadMemos() async throws {

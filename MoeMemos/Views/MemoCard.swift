@@ -22,6 +22,8 @@ struct MemoCard: View {
     @State private var showingDeleteConfirmation = false
     @State private var showingInAppBrowser = false
     @State private var inAppBrowserURL: URL?
+    @State private var isLoading = false
+    @State private var errorMessage: String?
 
     init(_ memo: Memo, defaultMemoVisibility: MemoVisibility) {
         self.memo = memo
@@ -56,6 +58,11 @@ struct MemoCard: View {
             }
 
             MemoCardContent(memo: memo, toggleTaskItem: toggleTaskItem(_:))
+            if let errorMessage = errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+                    .font(.caption)
+            }
         }
         .padding([.top, .bottom], 5)
         .contextMenu {
@@ -127,15 +134,34 @@ struct MemoCard: View {
         }
 
         Button {
-            if let uid = memo.remoteId {
-                let urlString = "https://workmemos.erauner.synology.me/m/\(uid)"
-                if let url = URL(string: urlString) {
-                    inAppBrowserURL = url
-                    showingInAppBrowser = true
+            Task {
+                guard let remoteId = memo.remoteId else { return }
+                isLoading = true
+                errorMessage = nil
+                do {
+                    let fetchedMemo = try await memosViewModel.getMemo(remoteId: remoteId)
+                    guard let uid = fetchedMemo.uid else {
+                        errorMessage = "Memo UID not found"
+                        return
+                    }
+                    let urlString = "https://workmemos.erauner.synology.me/m/\(uid)"
+                    if let url = URL(string: urlString) {
+                        inAppBrowserURL = url
+                        showingInAppBrowser = true
+                    } else {
+                        errorMessage = "Invalid URL"
+                    }
+                } catch {
+                    errorMessage = "Failed to fetch memo details: \(error.localizedDescription)"
                 }
+                isLoading = false
             }
         } label: {
-            Label("memo.open_in_browser", systemImage: "safari")
+            if isLoading {
+                ProgressView()
+            } else {
+                Label("memo.open_in_browser", systemImage: "safari")
+            }
         }
 
         Button(role: .destructive, action: {
@@ -167,5 +193,28 @@ struct MemoCard: View {
         } catch {
             print(error)
         }
+    }
+
+    private func openMemoInBrowser() async {
+        guard let remoteId = memo.remoteId else { return }
+        isLoading = true
+        errorMessage = nil
+        do {
+            let fetchedMemo = try await memosViewModel.getMemo(remoteId: remoteId)
+            guard let uid = fetchedMemo.uid else {
+                errorMessage = "Memo UID not found"
+                return
+            }
+            let urlString = "https://workmemos.erauner.synology.me/m/\(uid)"
+            if let url = URL(string: urlString) {
+                inAppBrowserURL = url
+                showingInAppBrowser = true
+            } else {
+                errorMessage = "Invalid URL"
+            }
+        } catch {
+            errorMessage = "Failed to fetch memo details: \(error.localizedDescription)"
+        }
+        isLoading = false
     }
 }
