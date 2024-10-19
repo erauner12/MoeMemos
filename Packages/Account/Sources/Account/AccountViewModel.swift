@@ -55,7 +55,7 @@ import MemosV0Service
             }
         }
 
-        // Remove removed users
+        // Remove users that are no longer in accounts
         for user in savedUsers {
             if !accountManager.accounts.contains(where: { $0.key == user.accountKey }) {
                 currentContext.delete(user)
@@ -86,14 +86,6 @@ import MemosV0Service
         guard let accessToken = accessToken, let userId = user.id else { throw MoeMemosError.unsupportedVersion }
         let account = Account.memosV1(host: hostURL.absoluteString, id: "\(userId)", accessToken: accessToken)
         
-        // Fetch and delete existing user if any
-        let predicate = NSPredicate(format: "accountKey == %@", account.key)
-        let fetchDescriptor = FetchDescriptor<User>(predicate: predicate)
-        let existingUsers = try currentContext.fetch(fetchDescriptor)
-        for existingUser in existingUsers {
-            currentContext.delete(existingUser)
-        }
-        
         try accountManager.add(account: account)
         try await reloadUsers()
     }
@@ -104,14 +96,6 @@ import MemosV0Service
         let user = try await client.getCurrentUser()
         guard let id = user.remoteId else { throw MoeMemosError.unsupportedVersion }
         let account = Account.memosV1(host: hostURL.absoluteString, id: id, accessToken: accessToken)
-        
-        // Fetch and delete existing user if any
-        let predicate = NSPredicate(format: "accountKey == %@", account.key)
-        let fetchDescriptor = FetchDescriptor<User>(predicate: predicate)
-        let existingUsers = try currentContext.fetch(fetchDescriptor)
-        for existingUser in existingUsers {
-            currentContext.delete(existingUser)
-        }
         
         try accountManager.add(account: account)
         try await reloadUsers()
