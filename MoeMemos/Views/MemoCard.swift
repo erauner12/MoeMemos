@@ -16,6 +16,7 @@ struct MemoCard: View {
     let defaultMemoVisilibity: MemoVisibility?
     
     @Environment(MemosViewModel.self) private var memosViewModel: MemosViewModel
+    @Environment(\.openURL) private var openURL
     @State private var showingEdit = false
     @State private var showingDeleteConfirmation = false
     
@@ -30,19 +31,19 @@ struct MemoCard: View {
                 Text(memo.renderTime())
                     .font(.footnote)
                     .foregroundColor(.secondary)
-                
+
                 if memo.visibility != defaultMemoVisilibity {
                     Image(systemName: memo.visibility.iconName)
                         .foregroundColor(.secondary)
                 }
-                
+
                 if memo.pinned == true {
                     Image(systemName: "flag.fill")
                         .renderingMode(.original)
                 }
-                
+
                 Spacer()
-                
+
                 Menu {
                     normalMenu()
                 } label: {
@@ -50,7 +51,7 @@ struct MemoCard: View {
                         .padding([.leading, .top, .bottom], 10)
                 }
             }
-            
+
             MemoCardContent(memo: memo, toggleTaskItem: toggleTaskItem(_:))
         }
         .padding([.top, .bottom], 5)
@@ -74,7 +75,7 @@ struct MemoCard: View {
             Button("memo.action.cancel", role: .cancel) {}
         }
     }
-    
+
     @ViewBuilder
     private func normalMenu() -> some View {
         Button {
@@ -93,14 +94,31 @@ struct MemoCard: View {
                 Label("memo.pin", systemImage: "flag")
             }
         }
+
         Button {
             showingEdit = true
         } label: {
             Label("memo.edit", systemImage: "pencil")
         }
+
         ShareLink(item: memo.content) {
             Label("memo.share", systemImage: "square.and.arrow.up")
         }
+
+        Button {
+            UIPasteboard.general.setValue(memo.content, forPasteboardType: UTType.plainText.identifier)
+        } label: {
+            Label("memo.copy_to_clipboard", systemImage: "doc.on.clipboard")
+        }
+
+        Button {
+            if let url = URL(string: "https://workmemos.erauner.synology.me/m/\(memo.remoteId ?? "")") {
+                openURL(url)
+            }
+        } label: {
+            Label("memo.open_in_browser", systemImage: "safari")
+        }
+
         Button(role: .destructive, action: {
             Task {
                 do {
@@ -113,6 +131,7 @@ struct MemoCard: View {
         }, label: {
             Label("memo.archive", systemImage: "archivebox")
         })
+
         Button(role: .destructive, action: {
             showingDeleteConfirmation = true
         }, label: {

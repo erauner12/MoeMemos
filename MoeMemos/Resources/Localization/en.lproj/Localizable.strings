@@ -19,6 +19,8 @@
 "memo.restore" = "Restore";
 "memo.share" = "Share";
 "memo.unpin" = "Unpin";
+"memo.copy_to_clipboard" = "Copy to Clipboard";
+"memo.open_in_browser" = "Open in Browser";
 "memo.action.ok" = "Yes";
 "memo.visibility.public" = "Visible to guests";
 "memo.visibility.protected" = "Visible to local members";

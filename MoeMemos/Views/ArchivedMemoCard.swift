@@ -15,6 +15,7 @@ struct ArchivedMemoCard: View {
     let archivedViewModel: ArchivedMemoListViewModel
 
     @Environment(MemosViewModel.self) private var memosViewModel: MemosViewModel
+    @Environment(\.openURL) private var openURL: OpenURLAction   
     @State private var showingDeleteConfirmation = false
 
     init(_ memo: Memo, archivedViewModel: ArchivedMemoListViewModel) {
@@ -75,6 +76,22 @@ struct ArchivedMemoCard: View {
         } label: {
             Label("memo.restore", systemImage: "tray.and.arrow.up")
         }
+        
+        Button {
+            UIPasteboard.general.setValue(memo.content, forPasteboardType: UTType.plainText.identifier)
+        } label: {
+            Label("memo.copy_to_clipboard", systemImage: "doc.on.clipboard")
+        }
+        
+        Button {
+            // if let url = URL(string: "\(memosServerURL)/m/\(memo.uid)") {
+            if let url = URL(string: "https://workmemos.erauner.synology.me/m/\(memo.remoteId ?? "")") {
+                openURL(url)
+            }
+        } label: {
+            Label("memo.open_in_browser", systemImage: "safari")
+        }
+        
         Button(role: .destructive, action: {
             showingDeleteConfirmation = true
         }, label: {
