@@ -15,7 +15,7 @@ fileprivate let weekDaySymbols: [String] = {
 }()
 
 struct Stats: View {
-    @Environment(MemosViewModel.self) private var memosViewModel: MemosViewModel
+    @Bindable var memosViewModel: MemosViewModel
     @Environment(AccountViewModel.self) var userState: AccountViewModel
     
     var body: some View {

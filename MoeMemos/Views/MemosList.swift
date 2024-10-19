@@ -57,7 +57,7 @@ struct MemosList: View {
             MemoInput(memo: nil)
         }
         .onAppear {
-            filteredMemoList = filterMemoList(memosViewModel.memoList, tag: tag, searchString: searchString)
+            updateFilteredMemoList()
         }
         .refreshable {
             do {
@@ -66,14 +66,17 @@ struct MemosList: View {
                 print(error)
             }
         }
-        .onChange(of: memosViewModel.memoList) { _, newValue in
-            filteredMemoList = filterMemoList(newValue, tag: tag, searchString: searchString)
+        .onChange(of: memosViewModel.memoList) { _, _ in
+            updateFilteredMemoList()
         }
-        .onChange(of: tag) { _, newValue in
-            filteredMemoList = filterMemoList(memosViewModel.memoList, tag: newValue, searchString: searchString)
+        .onChange(of: tag) { _, _ in
+            updateFilteredMemoList()
         }
-        .onChange(of: searchString) { _, newValue in
-            filteredMemoList = filterMemoList(memosViewModel.memoList, tag: tag, searchString: newValue)
+        .onChange(of: searchString) { _, _ in
+            updateFilteredMemoList()
+        }
+        .onChange(of: memosViewModel.selectedTimeFilter) { _, _ in
+            updateFilteredMemoList()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             Task {
@@ -84,25 +87,26 @@ struct MemosList: View {
         }
     }
     
-    private func filterMemoList(_ memoList: [Memo], tag: Tag?, searchString: String) -> [Memo] {
-        let pinned = memoList.filter { $0.pinned == true }
-        let nonPinned = memoList.filter { !($0.pinned == true) }
-        var fullList = pinned + nonPinned
+    private func updateFilteredMemoList() {
+        let timeFilteredMemos = memosViewModel.filteredMemos(tag: tag)
         
-        if let tag = tag {
-            fullList = fullList.filter({ memo in
-                memo.content.contains("#\(tag.name) ") || memo.content.contains("#\(tag.name)/")
-                || memo.content.contains("#\(tag.name)\n")
-                || memo.content.hasSuffix("#\(tag.name)")
-            })
-        }
-        
-        if !searchString.isEmpty {
-            fullList = fullList.filter({ memo in
+        if searchString.isEmpty {
+            filteredMemoList = timeFilteredMemos
+        } else {
+            filteredMemoList = timeFilteredMemos.filter { memo in
                 memo.content.localizedCaseInsensitiveContains(searchString)
-            })
+            }
         }
         
-        return fullList
+        // Sort memos: pinned first, then by creation date
+        filteredMemoList.sort { (memo1, memo2) in
+            if memo1.pinned == true && memo2.pinned != true {
+                return true
+            } else if memo1.pinned != true && memo2.pinned == true {
+                return false
+            } else {
+                return memo1.createdAt > memo2.createdAt
+            }
+        }
     }
 }

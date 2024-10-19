@@ -11,14 +11,14 @@ import Env
 import Models
 
 struct Sidebar: View {
-    @Environment(MemosViewModel.self) private var memosViewModel: MemosViewModel
+    @Bindable var memosViewModel: MemosViewModel
     @Environment(AccountManager.self) private var accountManager: AccountManager
     @Environment(AccountViewModel.self) private var userState: AccountViewModel
     @Binding var selection: Route?
 
     var body: some View {
         List(selection: UIDevice.current.userInterfaceIdiom == .pad || UIDevice.current.userInterfaceIdiom == .vision ? $selection : nil) {
-            Stats()
+            Stats(memosViewModel: memosViewModel)
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(EmptyView())
@@ -38,6 +38,17 @@ struct Sidebar: View {
                 }
             } header: {
                 Text("moe-memos")
+            }
+            
+            Section {
+                Picker("Time Filter", selection: $memosViewModel.selectedTimeFilter) {
+                    ForEach(MemoTimeFilter.allCases) { filter in
+                        Text(filter.displayName).tag(filter)
+                    }
+                }
+                .pickerStyle(MenuPickerStyle())
+            } header: {
+                Text("memo.time_filter")
             }
             
             Section {

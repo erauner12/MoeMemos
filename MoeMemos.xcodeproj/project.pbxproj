@@ -94,6 +94,9 @@
 		31EE785F29B9E6F4005F62D0 /* Highlightr in Frameworks */ = {isa = PBXBuildFile; productRef = 31EE785E29B9E6F4005F62D0 /* Highlightr */; };
 		31EE786129B9F3A2005F62D0 /* Highlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31EE786029B9F3A2005F62D0 /* Highlighter.swift */; };
 		B0640C952CC43C5C0089DF6F /* InAppBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0640C942CC43C5C0089DF6F /* InAppBrowserView.swift */; };
+		B0640C972CC46F300089DF6F /* MemoTimeFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0640C962CC46F300089DF6F /* MemoTimeFilter.swift */; };
+		B0640C982CC46F300089DF6F /* MemoTimeFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0640C962CC46F300089DF6F /* MemoTimeFilter.swift */; };
+		B0640C992CC46F300089DF6F /* MemoTimeFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0640C962CC46F300089DF6F /* MemoTimeFilter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -212,6 +215,7 @@
 		31EE785529B83D1B005F62D0 /* LazyImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyImageProvider.swift; sourceTree = "<group>"; };
 		31EE786029B9F3A2005F62D0 /* Highlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Highlighter.swift; sourceTree = "<group>"; };
 		B0640C942CC43C5C0089DF6F /* InAppBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppBrowserView.swift; sourceTree = "<group>"; };
+		B0640C962CC46F300089DF6F /* MemoTimeFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoTimeFilter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -428,6 +432,7 @@
 		19F31BF928C3E990000C5207 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				B0640C962CC46F300089DF6F /* MemoTimeFilter.swift */,
 				19F31BFA28C3E9B2000C5207 /* Memo.swift */,
 				199A657C28C4761100C39994 /* Usage.swift */,
 				1951055D2C287A0F009EA669 /* NestedTag.swift */,
@@ -606,6 +611,7 @@
 			files = (
 				191339B4291D7288001F2B2E /* MoeMemosWidgetsBundle.swift in Sources */,
 				193F04E329CCBA9C0010E3BF /* MoeMemosWidgets.intentdefinition in Sources */,
+				B0640C972CC46F300089DF6F /* MemoTimeFilter.swift in Sources */,
 				191339B6291D7288001F2B2E /* MemosGraphWidget.swift in Sources */,
 				191339C5291D765B001F2B2E /* Memo.swift in Sources */,
 				191339CA291D7675001F2B2E /* Usage.swift in Sources */,
@@ -628,6 +634,7 @@
 				19E1C5BE28C4F6410072CEEF /* Stats.swift in Sources */,
 				19F31BFD28C3ED11000C5207 /* MemoCard.swift in Sources */,
 				199A657F28C47D7C00C39994 /* Sidebar.swift in Sources */,
+				B0640C992CC46F300089DF6F /* MemoTimeFilter.swift in Sources */,
 				19E6EF1F29113EC900C998F5 /* MemoInputViewModel.swift in Sources */,
 				193DE93028C65104002651E0 /* MemosViewModel.swift in Sources */,
 				1973B7D72916308D003C3710 /* Constants.swift in Sources */,
@@ -674,6 +681,7 @@
 			files = (
 				19E29A782938FCE000BE9C32 /* MoeMemosShareView.swift in Sources */,
 				19E29A6B2938FBCD00BE9C32 /* ShareViewController.swift in Sources */,
+				B0640C982CC46F300089DF6F /* MemoTimeFilter.swift in Sources */,
 				19B5CFFD2939BC1300140294 /* Constants.swift in Sources */,
 				19B5CFFF2939BC2F00140294 /* Memo.swift in Sources */,
 				1907559A2B66514700451E6D /* TagVisitor.swift in Sources */,

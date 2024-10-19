@@ -15,10 +15,12 @@ struct MoeMemosApp: App {
     @Injected(\.appInfo) private var appInfo
     @Injected(\.accountViewModel) private var userState
     @Injected(\.accountManager) private var accountManager
+    
+    @State private var memosViewModel = MemosViewModel()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(memosViewModel: memosViewModel)
                 .environment(userState)
                 .environment(accountManager)
                 .environment(appInfo)

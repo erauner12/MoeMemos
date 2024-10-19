@@ -10,23 +10,27 @@ import Account
 import Models
 import Factory
 import MemosV1Service
+import Observation
 
-@Observable class MemosViewModel {
+@Observable
+class MemosViewModel {
     @ObservationIgnored
     @Injected(\.accountManager) private var accountManager
     @ObservationIgnored
     var service: RemoteService { get throws { try accountManager.mustCurrentService } }
 
-    private(set) var memoList: [Memo] = [] {
+    var memoList: [Memo] = [] {
         didSet {
             matrix = DailyUsageStat.calculateMatrix(memoList: memoList)
         }
     }
-    private(set) var tags: [Tag] = []
-    private(set) var nestedTags: [NestedTag] = []
-    private(set) var matrix: [DailyUsageStat] = DailyUsageStat.initialMatrix
-    private(set) var inited = false
-    private(set) var loading = false
+    var tags: [Tag] = []
+    var nestedTags: [NestedTag] = []
+    var matrix: [DailyUsageStat] = DailyUsageStat.initialMatrix
+    var inited = false
+    var loading = false
+    
+    var selectedTimeFilter: MemoTimeFilter = .all
 
     @MainActor
     func getMemo(remoteId: String) async throws -> Memo {
@@ -115,5 +119,27 @@ import MemosV1Service
         memoList = memoList.filter({ memo in
             memo.remoteId != remoteId
         })
+    }
+    
+    func filteredMemos(tag: Tag?) -> [Memo] {
+        let filteredByTag = tag == nil ? memoList : memoList.filter { memo in
+            memo.content.contains("#\(tag!.name) ") || memo.content.contains("#\(tag!.name)/")
+            || memo.content.contains("#\(tag!.name)\n")
+            || memo.content.hasSuffix("#\(tag!.name)")
+        }
+        
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        
+        switch selectedTimeFilter {
+        case .all:
+            return filteredByTag
+        case .createdToday:
+            return filteredByTag.filter { calendar.isDate($0.createdAt, inSameDayAs: today) }
+        case .updatedToday:
+            return filteredByTag.filter { calendar.isDate($0.updatedAt, inSameDayAs: today) }
+        case .modifiedToday:
+            return filteredByTag.filter { calendar.isDate($0.createdAt, inSameDayAs: today) || calendar.isDate($0.updatedAt, inSameDayAs: today) }
+        }
     }
 }

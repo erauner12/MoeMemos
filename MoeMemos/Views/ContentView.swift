@@ -4,13 +4,13 @@
 //
 //  Created by Mudkip on 2022/9/3.
 //
-
 import SwiftUI
 import Models
 import SwiftData
 import Account
 import Factory
 import Env
+import Observation
 
 @MainActor
 struct ContentView: View {
@@ -18,13 +18,13 @@ struct ContentView: View {
     @Environment(AccountManager.self) private var accountManager: AccountManager
     @Injected(\.appInfo) private var appInfo
     @State private var selection: Route? = .memos
-    @State private var memosViewModel = MemosViewModel()
+    @Bindable var memosViewModel: MemosViewModel
     @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         @Bindable var accountViewModel = accountViewModel
         
-        Navigation(selection: $selection)
+        Navigation(memosViewModel: memosViewModel, selection: $selection)
             .tint(.green)
             .environment(memosViewModel)
             .onChange(of: scenePhase, initial: true, { _, newValue in
