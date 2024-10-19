@@ -72,6 +72,7 @@ struct MemoCard: View {
             if let url = inAppBrowserURL {
                 NavigationView {
                     InAppBrowserView(url: url, isPresented: $showingInAppBrowser)
+                        .edgesIgnoringSafeArea(.all)
                         .navigationBarTitle(Text(url.host ?? ""), displayMode: .inline)
                         .navigationBarItems(trailing: Button("Done") {
                             showingInAppBrowser = false
@@ -126,9 +127,12 @@ struct MemoCard: View {
         }
 
         Button {
-            if let uid = memo.remoteId, let url = URL(string: "https://workmemos.erauner.synology.me/m/\(uid)") {
-                inAppBrowserURL = url
-                showingInAppBrowser = true
+            if let uid = memo.remoteId {
+                let urlString = "https://workmemos.erauner.synology.me/m/\(uid)"
+                if let url = URL(string: urlString) {
+                    inAppBrowserURL = url
+                    showingInAppBrowser = true
+                }
             }
         } label: {
             Label("memo.open_in_browser", systemImage: "safari")

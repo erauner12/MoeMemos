@@ -13,10 +13,8 @@ struct InAppBrowserView: UIViewRepresentable {
         let webView = WKWebView()
         webView.navigationDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = true
-
         let request = URLRequest(url: url)
         webView.load(request)
-
         return webView
     }
 
@@ -35,11 +33,21 @@ struct InAppBrowserView: UIViewRepresentable {
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             // Handle actions after navigation if needed
         }
+        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+            if navigationAction.navigationType == .linkActivated {
+                if let url = navigationAction.request.url, url.host != self.parent.url.host {
+                    UIApplication.shared.open(url)
+                    decisionHandler(.cancel)
+                    return
+                }
+            }
+            decisionHandler(.allow)
+        }
     }
 
     var body: some View {
         VStack {
-            WebViewContainer(webView: makeUIView(context: UIViewRepresentableContext(self)))
+            WebViewContainer(webView: makeUIView(context: UIViewRepresentableContext<<#Representable: UIViewRepresentable#>>(self)))
             HStack {
                 Spacer()
                 CloseButton(action: {
