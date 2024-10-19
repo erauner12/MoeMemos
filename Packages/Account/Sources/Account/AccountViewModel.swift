@@ -87,8 +87,8 @@ import MemosV0Service
         let account = Account.memosV1(host: hostURL.absoluteString, id: "\(userId)", accessToken: accessToken)
         
         // Fetch and delete existing user if any
-        let predicate = #Predicate<User> { $0.accountKey == account.key }
-        let fetchDescriptor = FetchDescriptor(predicate: predicate)
+        let predicate = NSPredicate(format: "accountKey == %@", account.key)
+        let fetchDescriptor = FetchDescriptor<User>(predicate: predicate)
         let existingUsers = try currentContext.fetch(fetchDescriptor)
         for existingUser in existingUsers {
             currentContext.delete(existingUser)
@@ -106,8 +106,8 @@ import MemosV0Service
         let account = Account.memosV1(host: hostURL.absoluteString, id: id, accessToken: accessToken)
         
         // Fetch and delete existing user if any
-        let predicate = #Predicate<User> { $0.accountKey == account.key }
-        let fetchDescriptor = FetchDescriptor(predicate: predicate)
+        let predicate = NSPredicate(format: "accountKey == %@", account.key)
+        let fetchDescriptor = FetchDescriptor<User>(predicate: predicate)
         let existingUsers = try currentContext.fetch(fetchDescriptor)
         for existingUser in existingUsers {
             currentContext.delete(existingUser)
