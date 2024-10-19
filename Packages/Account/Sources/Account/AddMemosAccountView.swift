@@ -9,6 +9,7 @@ import SwiftUI
 import Models
 import MemosV0Service
 import DesignSystem
+import MemosV1Service
 
 @MainActor
 struct AddMemosAccountView: View {
@@ -105,21 +106,40 @@ struct AddMemosAccountView: View {
         guard let hostURL = URL(string: hostAddress) else { throw MoeMemosError.invalidParams }
         let server = try await detectMemosVersion(hostURL: hostURL)
 
-        if loginMethod == .usernamdAndPassword {
-            let username = username.trimmingCharacters(in: .whitespaces)
-            if username.isEmpty || password.isEmpty {
-                throw MoeMemosError.invalidParams
+        switch server {
+        case .memosV1:
+            if loginMethod == .usernamdAndPassword {
+                let username = username.trimmingCharacters(in: .whitespaces)
+                if username.isEmpty || password.isEmpty {
+                    throw MoeMemosError.invalidParams
+                }
+                try await accountViewModel.loginMemosV1(hostURL: hostURL, username: username, password: password)
+            } else if loginMethod == .accessToken {
+                let accessToken = accessToken.trimmingCharacters(in: .whitespaces)
+                if accessToken.isEmpty {
+                    throw MoeMemosError.invalidParams
+                }
+                try await accountViewModel.loginMemosV1(hostURL: hostURL, accessToken: accessToken)
             }
-            
-            try await accountViewModel.loginMemosV1(hostURL: hostURL, username: username, password: password)
-        } else if loginMethod == .accessToken {
-            let accessToken = accessToken.trimmingCharacters(in: .whitespaces)
-            if accessToken.isEmpty {
-                throw MoeMemosError.invalidParams
-            }
-            
-            try await accountViewModel.loginMemosV1(hostURL: hostURL, accessToken: accessToken)
+        case .memosV0:
+            throw MoeMemosError.unsupportedVersion
         }
         dismiss()
     }
+    
+    private func detectMemosVersion(hostURL: URL) async throws -> MemosServer {
+        let client = MemosV1Service(hostURL: hostURL, accessToken: nil, userId: nil)
+        do {
+            _ = try await client.getWorkspaceProfile()
+            return .memosV1
+        } catch {
+            // If V1 detection fails, assume it's V0 (or unsupported)
+            return .memosV0
+        }
+    }
+}
+
+private enum MemosServer {
+    case memosV0
+    case memosV1
 }
