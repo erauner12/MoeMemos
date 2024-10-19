@@ -135,26 +135,7 @@ struct MemoCard: View {
 
         Button {
             Task {
-                guard let remoteId = memo.remoteId else { return }
-                isLoading = true
-                errorMessage = nil
-                do {
-                    let fetchedMemo = try await memosViewModel.getMemo(remoteId: remoteId)
-                    guard let uid = fetchedMemo.uid else {
-                        errorMessage = "Memo UID not found"
-                        return
-                    }
-                    let urlString = "https://workmemos.erauner.synology.me/m/\(uid)"
-                    if let url = URL(string: urlString) {
-                        inAppBrowserURL = url
-                        showingInAppBrowser = true
-                    } else {
-                        errorMessage = "Invalid URL"
-                    }
-                } catch {
-                    errorMessage = "Failed to fetch memo details: \(error.localizedDescription)"
-                }
-                isLoading = false
+                await openMemoInBrowser()
             }
         } label: {
             if isLoading {
@@ -203,6 +184,7 @@ struct MemoCard: View {
             let fetchedMemo = try await memosViewModel.getMemo(remoteId: remoteId)
             guard let uid = fetchedMemo.uid else {
                 errorMessage = "Memo UID not found"
+                isLoading = false
                 return
             }
             let urlString = "https://workmemos.erauner.synology.me/m/\(uid)"

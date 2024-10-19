@@ -41,7 +41,7 @@ public final class MemosV1Service: RemoteService {
     }
 
     public func getMemo(remoteId: String) async throws -> Memo {
-        let resp = try await client.MemoService_GetMemo(path: .init(name_4: getName(remoteId: remoteId)))
+        let resp = try await client.MemoService_GetMemo(path: .init(name_3: getName(remoteId: remoteId)))
         let data = try resp.ok.body.json
         return data.toMemo(host: hostURL)
     }

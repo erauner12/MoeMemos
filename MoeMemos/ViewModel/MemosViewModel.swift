@@ -9,6 +9,7 @@ import Foundation
 import Account
 import Models
 import Factory
+import MemosV1Service
 
 @Observable class MemosViewModel {
     @ObservationIgnored
@@ -29,10 +30,15 @@ import Factory
 
     @MainActor
     func getMemo(remoteId: String) async throws -> Memo {
-        guard let service = service as? MemosV1Service else {
-            throw MoeMemosError.unsupportedVersion
+        do {
+            let currentService = try service
+            guard let memosV1Service = currentService as? MemosV1Service else {
+                throw MoeMemosError.unsupportedVersion
+            }
+            return try await memosV1Service.getMemo(remoteId: remoteId)
+        } catch {
+            throw error
         }
-        return try await service.getMemo(remoteId: remoteId)
     }
     
     @MainActor

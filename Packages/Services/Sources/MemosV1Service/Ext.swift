@@ -24,7 +24,8 @@ extension MemosV1Memo {
             resources: resources?.map { $0.toResource(host: host) } ?? [],
             createdAt: createTime ?? .now,
             updatedAt: updateTime ?? .now,
-            remoteId: "\(name ?? "")|\(uid ?? "")"
+            remoteId: name ?? "",
+            uid: uid ?? ""
         )
     }
 }
@@ -49,7 +50,7 @@ extension MemosV1Resource {
             mimeType: _type ?? "application/octet-stream",
             createdAt: createTime ?? .now,
             updatedAt: createTime ?? .now,
-            remoteId: "\(name ?? "")|\(uid ?? "")",
+            remoteId: name ?? "",
             url: url(for: host)
         )
     }
