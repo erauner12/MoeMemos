@@ -10,9 +10,18 @@ struct InAppBrowserView: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> WKWebView {
-        let webView = WKWebView()
+        let configuration = WKWebViewConfiguration()
+        configuration.websiteDataStore = WKWebsiteDataStore.default()
+        
+        let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = true
+        
+        // Enable cookie sharing with Safari
+        if #available(iOS 11.0, *) {
+            webView.configuration.websiteDataStore = WKWebsiteDataStore.default()
+        }
+        
         let request = URLRequest(url: url)
         webView.load(request)
         return webView
