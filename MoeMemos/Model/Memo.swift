@@ -54,6 +54,42 @@ extension Memo {
         formatter.dateTimeStyle = .named
         return formatter.localizedString(for: createdAt, relativeTo: .now)
     }
+
+    func hasTaskList() -> Bool {
+        // Use a regular expression to check for task list items
+        let taskListRegex = try? NSRegularExpression(pattern: "- \\[(x|\\s)\\]", options: [])
+        guard let regex = taskListRegex else {
+            return false
+        }
+        
+        let range = NSRange(content.startIndex..<content.endIndex, in: content)
+        let matches = regex.matches(in: content, range: range)
+        return !matches.isEmpty
+    }
+
+    func hasIncompleteTasks() -> Bool {
+        // Use a regular expression to check for incomplete task list items
+        let incompleteTaskRegex = try? NSRegularExpression(pattern: "- \\[ \\]", options: [])
+        guard let regex = incompleteTaskRegex else {
+            return false
+        }
+        
+        let range = NSRange(content.startIndex..<content.endIndex, in: content)
+        let matches = regex.matches(in: content, range: range)
+        return !matches.isEmpty
+    }
+    
+    func incompleteTaskCount() -> Int {
+        // Use a regular expression to count the number of incomplete task list items
+        let incompleteTaskRegex = try? NSRegularExpression(pattern: "- \\[ \\]", options: [])
+        guard let regex = incompleteTaskRegex else {
+            return 0
+        }
+        
+        let range = NSRange(content.startIndex..<content.endIndex, in: content)
+        let matches = regex.matches(in: content, range: range)
+        return matches.count
+    }
 }
 
 enum MemoPinFilter: String, CaseIterable, Identifiable {

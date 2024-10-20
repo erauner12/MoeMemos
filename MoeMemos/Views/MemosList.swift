@@ -17,6 +17,8 @@ struct MemosList: View {
     @State private var selectedDateFilter: MemoDateFilter = .all
     @State private var selectedTimeFilter: MemoTimeFilter = .all
     @State private var selectedPinFilter: MemoPinFilter = .all
+    @State private var hasTaskList = false
+    @State private var hasIncompleteTasks = false
     @Environment(AccountManager.self) private var accountManager: AccountManager
     @Environment(AccountViewModel.self) var userState: AccountViewModel
     @Environment(MemosViewModel.self) private var memosViewModel: MemosViewModel
@@ -107,25 +109,47 @@ struct MemosList: View {
                     Text(filter.displayName).tag(filter)
                 }
             }
+            Toggle("Has Task List", isOn: $hasTaskList)
+            Toggle("Has Incomplete Tasks", isOn: $hasIncompleteTasks)
         } label: {
             Label("Filters", systemImage: "line.3.horizontal.decrease.circle")
         }
     }
 
     private func updateFilteredMemoList() {
-        let timeFilteredMemos = memosViewModel.memoList
+        var filteredMemos = memosViewModel.memoList
 
-        let dateFilteredMemos = filterMemosByDate(memos: timeFilteredMemos)
-        let timeFilteredResult = filterMemosByTime(memos: dateFilteredMemos)
-        let pinFilteredMemos = filterMemosByPin(memos: timeFilteredResult)
-        let tagFilteredMemos = filterMemosByTag(memos: pinFilteredMemos)
-
-        filteredMemoList = searchString.isEmpty ? tagFilteredMemos :
-            tagFilteredMemos.filter { memo in
+        // Apply date filter
+        filteredMemos = filterMemosByDate(memos: filteredMemos)
+        
+        // Apply time filter
+        filteredMemos = filterMemosByTime(memos: filteredMemos)
+        
+        // Apply pin filter
+        filteredMemos = filterMemosByPin(memos: filteredMemos)
+        
+        // Apply tag filter
+        filteredMemos = filterMemosByTag(memos: filteredMemos)
+        
+        // Apply task list filter
+        if hasTaskList {
+            filteredMemos = filteredMemos.filter { $0.hasTaskList() }
+        }
+        
+        // Apply incomplete tasks filter
+        if hasIncompleteTasks {
+            filteredMemos = filteredMemos.filter { $0.hasIncompleteTasks() }
+        }
+        
+        // Apply search filter
+        if !searchString.isEmpty {
+            filteredMemos = filteredMemos.filter { memo in
                 memo.content.localizedCaseInsensitiveContains(searchString)
             }
-
-        filteredMemoList.sort { (memo1, memo2) in
+        }
+        
+        // Sort the filtered memos
+        filteredMemos.sort { (memo1, memo2) in
             if memo1.pinned == true && memo2.pinned != true {
                 return true
             } else if memo1.pinned != true && memo2.pinned == true {
@@ -134,6 +158,9 @@ struct MemosList: View {
                 return memo1.createdAt > memo2.createdAt
             }
         }
+        
+        // Assign the final filtered and sorted list
+        filteredMemoList = filteredMemos
     }
 
     private func filterMemosByTime(memos: [Memo]) -> [Memo] {
