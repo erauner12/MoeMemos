@@ -145,6 +145,12 @@ struct MemoCard: View {
             }
         }
 
+        Button {
+            openInDrafts()
+        } label: {
+            Label("Open in Drafts", systemImage: "square.and.pencil")
+        }
+
         Button(role: .destructive, action: {
             Task {
                 do {
@@ -198,5 +204,13 @@ struct MemoCard: View {
             errorMessage = "Failed to fetch memo details: \(error.localizedDescription)"
         }
         isLoading = false
+    }
+
+    private func openInDrafts() {
+        if let draftsUrl = createDraftsUrl(text: memo.content) {
+            openURL(draftsUrl)
+        } else {
+            errorMessage = "Failed to create Drafts URL"
+        }
     }
 }

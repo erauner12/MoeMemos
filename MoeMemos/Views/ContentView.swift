@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var selection: Route? = .memos
     @Bindable var memosViewModel: MemosViewModel
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.openURL) private var openURL
     
     var body: some View {
         @Bindable var accountViewModel = accountViewModel
@@ -27,6 +28,10 @@ struct ContentView: View {
         Navigation(memosViewModel: memosViewModel, selection: $selection)
             .tint(.green)
             .environment(memosViewModel)
+            .environment(\.openURL, OpenURLAction { url in
+                openURL(url)
+                return .handled
+            })
             .onChange(of: scenePhase, initial: true, { _, newValue in
                 if newValue == .active {
                     Task {
