@@ -8,7 +8,8 @@
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)R63D7L5N86.me.erauner.MoeMemos</string>
+		<string>$(AppIdentifierPrefix)me.erauner.MoeMemos.MoeMemosWidgets</string>
+		<string>$(AppIdentifierPrefix)R63D7L5N86.me.erauner.MoeMemos.MoeMemosWidgets</string>
 	</array>
 </dict>
 </plist>
