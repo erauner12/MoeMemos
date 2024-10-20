@@ -78,6 +78,9 @@ struct MemosList: View {
         .onChange(of: memosViewModel.selectedTimeFilter) { _, _ in
             updateFilteredMemoList()
         }
+        .onChange(of: memosViewModel.selectedPinFilter) { _, _ in
+            updateFilteredMemoList()
+        }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             Task {
                 if memosViewModel.inited {

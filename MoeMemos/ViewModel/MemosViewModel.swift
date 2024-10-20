@@ -31,6 +31,7 @@ class MemosViewModel {
     var loading = false
     
     var selectedTimeFilter: MemoTimeFilter = .all
+    var selectedPinFilter: MemoPinFilter = .all
 
     @MainActor
     func getMemo(remoteId: String) async throws -> Memo {
@@ -131,15 +132,24 @@ class MemosViewModel {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
         
-        switch selectedTimeFilter {
+        let timeFilteredMemos = switch selectedTimeFilter {
         case .all:
-            return filteredByTag
+            filteredByTag
         case .createdToday:
-            return filteredByTag.filter { calendar.isDate($0.createdAt, inSameDayAs: today) }
+            filteredByTag.filter { calendar.isDate($0.createdAt, inSameDayAs: today) }
         case .updatedToday:
-            return filteredByTag.filter { calendar.isDate($0.updatedAt, inSameDayAs: today) }
+            filteredByTag.filter { calendar.isDate($0.updatedAt, inSameDayAs: today) }
         case .modifiedToday:
-            return filteredByTag.filter { calendar.isDate($0.createdAt, inSameDayAs: today) || calendar.isDate($0.updatedAt, inSameDayAs: today) }
+            filteredByTag.filter { calendar.isDate($0.createdAt, inSameDayAs: today) || calendar.isDate($0.updatedAt, inSameDayAs: today) }
+        }
+        
+        return switch selectedPinFilter {
+        case .all:
+            timeFilteredMemos
+        case .pinned:
+            timeFilteredMemos.filter { $0.pinned == true }
+        case .unpinned:
+            timeFilteredMemos.filter { $0.pinned != true }
         }
     }
 }

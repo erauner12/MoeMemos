@@ -55,3 +55,22 @@ extension Memo {
         return formatter.localizedString(for: createdAt, relativeTo: .now)
     }
 }
+
+enum MemoPinFilter: String, CaseIterable, Identifiable {
+    case all
+    case pinned
+    case unpinned
+    
+    var id: String { self.rawValue }
+    
+    var displayName: LocalizedStringKey {
+        switch self {
+        case .all:
+            return "memo.pin_filter.all"
+        case .pinned:
+            return "memo.pin_filter.pinned"
+        case .unpinned:
+            return "memo.pin_filter.unpinned"
+        }
+    }
+}

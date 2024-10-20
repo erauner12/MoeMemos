@@ -47,8 +47,15 @@ struct Sidebar: View {
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
+                
+                Picker("Pin Filter", selection: $memosViewModel.selectedPinFilter) {
+                    ForEach(MemoPinFilter.allCases) { filter in
+                        Text(filter.displayName).tag(filter)
+                    }
+                }
+                .pickerStyle(MenuPickerStyle())
             } header: {
-                Text("memo.time_filter")
+                Text("memo.filters")
             }
             
             Section {
