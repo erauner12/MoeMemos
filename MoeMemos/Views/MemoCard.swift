@@ -210,6 +210,9 @@ struct MemoCard: View {
     private func openInDrafts() {
         if let draftsUrl = createDraftsUrl(text: memo.content) {
             openURL(draftsUrl)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                showingEdit = true
+            }
         } else {
             errorMessage = "Failed to create Drafts URL"
         }

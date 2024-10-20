@@ -82,6 +82,12 @@ struct MemoInput: View {
                     Image(systemName: "camera")
                 }
                 
+                Button {
+                    pasteFromClipboard()
+                } label: {
+                    Image(systemName: "doc.on.clipboard")
+                }
+                
                 Spacer()
             }
             .frame(height: 20)
@@ -351,6 +357,12 @@ struct MemoInput: View {
         }
 
         return true
+    }
+
+    private func pasteFromClipboard() {
+        if let clipboardString = UIPasteboard.general.string {
+            text = clipboardString
+        }
     }
 }
 
