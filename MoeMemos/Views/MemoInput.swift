@@ -35,66 +35,31 @@ struct MemoInput: View {
         VStack(spacing: 0) {
             Divider()
             HStack(alignment: .center) {
-                if !memosViewModel.tags.isEmpty {
-                    ZStack {
-                        Menu {
-                            ForEach(memosViewModel.tags) { tag in
-                                Button(tag.name) {
-                                    insert(tag: tag)
-                                }
-                            }
-                        } label: {
-                            // On iOS 16, the position of menu label is unstable after keyboard change,
-                            // So we use a transparent menu label here
-                            Color.clear.frame(width: 15)
-                        }
-                        Button {
-                            // Do nothing, pass through to the menu
-                        } label: {
-                            Image(systemName: "number")
-                        }
-                        .allowsHitTesting(false)
+                Spacer() // This pushes all buttons to the right side
+                
+                ForEach(toolbarButtons, id: \.icon) { button in
+                    Button(action: button.action) {
+                        Image(systemName: button.icon)
+                            .font(.system(size: 22)) // Increase icon size
+                            .frame(width: 44, height: 44) // Increase touch target
                     }
-                    
-                } else {
-                    Button {
-                        insert(tag: nil)
-                    } label: {
-                        Image(systemName: "number")
-                    }
+                    .padding(.horizontal, 8) // Add more horizontal space between buttons
                 }
-                
-                Button {
-                    toggleTodoItem()
-                } label: {
-                    Image(systemName: "checkmark.square")
-                }
-                
-                Button {
-                    showingPhotoPicker = true
-                } label: {
-                    Image(systemName: "photo.on.rectangle")
-                }
-                
-                Button {
-                    showingImagePicker = true
-                } label: {
-                    Image(systemName: "camera")
-                }
-                
-                Button {
-                    pasteFromClipboard()
-                } label: {
-                    Image(systemName: "doc.on.clipboard")
-                }
-                
-                Spacer()
             }
-            .frame(height: 20)
+            .frame(height: 56) // Increase toolbar height
             .padding(.horizontal, 20)
-            .padding(.vertical, 12)
             .background(.ultraThinMaterial)
         }
+    }
+    
+    private var toolbarButtons: [(icon: String, action: () -> Void)] {
+        [
+            ("number", { insert(tag: nil) }),
+            ("checkmark.square", toggleTodoItem),
+            ("photo.on.rectangle", { showingPhotoPicker = true }),
+            ("camera", { showingImagePicker = true }),
+            ("doc.on.clipboard", pasteFromClipboard)
+        ]
     }
     
     @ViewBuilder
@@ -115,7 +80,7 @@ struct MemoInput: View {
                     .padding(.horizontal)
                 MemoInputResourceView(viewModel: viewModel)
             }
-            .padding(.bottom, 40)
+            .padding(.bottom, 60) // Increase bottom padding to accommodate larger toolbar
             toolbar()
         }
         
@@ -365,6 +330,5 @@ struct MemoInput: View {
         }
     }
 }
-
 
 extension PhotosPickerItem: @unchecked Sendable {}
