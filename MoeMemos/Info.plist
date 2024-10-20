@@ -14,5 +14,10 @@
 		<string>MemoryWidgetConfigurationIntent</string>
 		<string>MemosGraphWidgetConfigurationIntent</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+	</array>
 </dict>
 </plist>
