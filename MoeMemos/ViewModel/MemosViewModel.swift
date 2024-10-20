@@ -11,10 +11,8 @@ import Models
 import Factory
 import MemosV1Service
 import Observation
-import SwiftUI
 
 @Observable
-@MainActor
 class MemosViewModel {
     @ObservationIgnored
     @Injected(\.accountManager) private var accountManager
@@ -31,11 +29,9 @@ class MemosViewModel {
     var matrix: [DailyUsageStat] = DailyUsageStat.initialMatrix
     var inited = false
     var loading = false
-
+    
     var selectedTimeFilter: MemoTimeFilter = .all
-    var selectedDateFilter: MemoDateFilter = .created
-    var customStartDate: Date?
-    var customEndDate: Date?
+    var selectedPinFilter: MemoPinFilter = .all
 
     @MainActor
     func getMemo(remoteId: String) async throws -> Memo {
@@ -134,65 +130,26 @@ class MemosViewModel {
         }
         
         let calendar = Calendar.current
-        let now = Date()
+        let today = calendar.startOfDay(for: Date())
         
-        let timeFilteredMemos = filteredByTag.filter { memo in
-            let relevantDate: Date
-            switch selectedDateFilter {
-            case .created:
-                relevantDate = memo.createdAt
-            case .modified, .updated:
-                relevantDate = memo.updatedAt
-            }
-            
-            switch selectedTimeFilter {
-            case .all:
-                return true
-            case .today:
-                return calendar.isDateInToday(relevantDate)
-            case .yesterday:
-                return calendar.isDateInYesterday(relevantDate)
-            case .thisWeek:
-                return calendar.isDate(relevantDate, equalTo: now, toGranularity: .weekOfYear)
-            case .lastWeek:
-                let lastWeekStart = calendar.date(byAdding: .weekOfYear, value: -1, to: calendar.startOfWeek(for: now))!
-                let lastWeekEnd = calendar.date(byAdding: .day, value: 6, to: lastWeekStart)!
-                return relevantDate >= lastWeekStart && relevantDate <= lastWeekEnd
-            case .thisMonth:
-                return calendar.isDate(relevantDate, equalTo: now, toGranularity: .month)
-            case .lastMonth:
-                let lastMonthDate = calendar.date(byAdding: .month, value: -1, to: now)!
-                return calendar.isDate(relevantDate, equalTo: lastMonthDate, toGranularity: .month)
-            case .last3Days:
-                let threeDaysAgo = calendar.date(byAdding: .day, value: -3, to: now)!
-                return relevantDate >= threeDaysAgo
-            case .last7Days:
-                let sevenDaysAgo = calendar.date(byAdding: .day, value: -7, to: now)!
-                return relevantDate >= sevenDaysAgo
-            case .last30Days:
-                let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: now)!
-                return relevantDate >= thirtyDaysAgo
-            case .custom:
-                guard let start = customStartDate, let end = customEndDate else { return true }
-                return relevantDate >= start && relevantDate <= end
-            }
+        let timeFilteredMemos = switch selectedTimeFilter {
+        case .all:
+            filteredByTag
+        case .createdToday:
+            filteredByTag.filter { calendar.isDate($0.createdAt, inSameDayAs: today) }
+        case .updatedToday:
+            filteredByTag.filter { calendar.isDate($0.updatedAt, inSameDayAs: today) }
+        case .modifiedToday:
+            filteredByTag.filter { calendar.isDate($0.createdAt, inSameDayAs: today) || calendar.isDate($0.updatedAt, inSameDayAs: today) }
         }
         
-        return timeFilteredMemos.sorted { (memo1, memo2) in
-            if memo1.pinned == true && memo2.pinned != true {
-                return true
-            } else if memo1.pinned != true && memo2.pinned == true {
-                return false
-            } else {
-                return memo1.createdAt > memo2.createdAt
-            }
+        return switch selectedPinFilter {
+        case .all:
+            timeFilteredMemos
+        case .pinned:
+            timeFilteredMemos.filter { $0.pinned == true }
+        case .unpinned:
+            timeFilteredMemos.filter { $0.pinned != true }
         }
-    }
-}
-
-extension Calendar {
-    func startOfWeek(for date: Date) -> Date {
-        let components = dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
-        return self.date(from: components)!
     }
 }
