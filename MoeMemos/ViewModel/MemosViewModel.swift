@@ -29,9 +29,6 @@ class MemosViewModel {
     var matrix: [DailyUsageStat] = DailyUsageStat.initialMatrix
     var inited = false
     var loading = false
-    
-    var selectedTimeFilter: MemoTimeFilter = .all
-    var selectedPinFilter: MemoPinFilter = .all
 
     @MainActor
     func getMemo(remoteId: String) async throws -> Memo {
@@ -120,36 +117,5 @@ class MemosViewModel {
         memoList = memoList.filter({ memo in
             memo.remoteId != remoteId
         })
-    }
-    
-    func filteredMemos(tag: Tag?) -> [Memo] {
-        let filteredByTag = tag == nil ? memoList : memoList.filter { memo in
-            memo.content.contains("#\(tag!.name) ") || memo.content.contains("#\(tag!.name)/")
-            || memo.content.contains("#\(tag!.name)\n")
-            || memo.content.hasSuffix("#\(tag!.name)")
-        }
-        
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        
-        let timeFilteredMemos = switch selectedTimeFilter {
-        case .all:
-            filteredByTag
-        case .createdToday:
-            filteredByTag.filter { calendar.isDate($0.createdAt, inSameDayAs: today) }
-        case .updatedToday:
-            filteredByTag.filter { calendar.isDate($0.updatedAt, inSameDayAs: today) }
-        case .modifiedToday:
-            filteredByTag.filter { calendar.isDate($0.createdAt, inSameDayAs: today) || calendar.isDate($0.updatedAt, inSameDayAs: today) }
-        }
-        
-        return switch selectedPinFilter {
-        case .all:
-            timeFilteredMemos
-        case .pinned:
-            timeFilteredMemos.filter { $0.pinned == true }
-        case .unpinned:
-            timeFilteredMemos.filter { $0.pinned != true }
-        }
     }
 }

@@ -41,24 +41,6 @@ struct Sidebar: View {
             }
             
             Section {
-                Picker("Time Filter", selection: $memosViewModel.selectedTimeFilter) {
-                    ForEach(MemoTimeFilter.allCases) { filter in
-                        Text(filter.displayName).tag(filter)
-                    }
-                }
-                .pickerStyle(MenuPickerStyle())
-                
-                Picker("Pin Filter", selection: $memosViewModel.selectedPinFilter) {
-                    ForEach(MemoPinFilter.allCases) { filter in
-                        Text(filter.displayName).tag(filter)
-                    }
-                }
-                .pickerStyle(MenuPickerStyle())
-            } header: {
-                Text("memo.filters")
-            }
-            
-            Section {
                 OutlineGroup(memosViewModel.nestedTags, children: \.children) { item in
                     NavigationLink(value: Route.tag(Tag(name: item.fullName))) {
                         Label(item.name, systemImage: "number")
