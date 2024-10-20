@@ -9,11 +9,10 @@ import SwiftUI
 import PhotosUI
 import Models
 import Account
-
 @MainActor
 struct MemoInput: View {
     let memo: Memo?
-    @Environment(MemosViewModel.self) private var memosViewModel: MemosViewModel
+    @EnvironmentObject private var memosViewModel: MemosViewModel
     @Environment(AccountViewModel.self) var userState: AccountViewModel
     @Environment(AccountManager.self) var accountManager: AccountManager
     @State private var viewModel = MemoInputViewModel()

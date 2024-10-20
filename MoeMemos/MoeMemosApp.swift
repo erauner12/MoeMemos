@@ -15,7 +15,7 @@ struct MoeMemosApp: App {
     @Injected(\.appInfo) private var appInfo
     @Injected(\.accountViewModel) private var userState
     @Injected(\.accountManager) private var accountManager
-    
+
     @State private var memosViewModel = MemosViewModel()
 
     var body: some Scene {
@@ -24,6 +24,7 @@ struct MoeMemosApp: App {
                 .environment(userState)
                 .environment(accountManager)
                 .environment(appInfo)
+                .environmentObject(memosViewModel)
         }
     }
 }

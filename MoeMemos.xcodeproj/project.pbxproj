@@ -97,6 +97,9 @@
 		B0640C972CC46F300089DF6F /* MemoTimeFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0640C962CC46F300089DF6F /* MemoTimeFilter.swift */; };
 		B0640C982CC46F300089DF6F /* MemoTimeFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0640C962CC46F300089DF6F /* MemoTimeFilter.swift */; };
 		B0640C992CC46F300089DF6F /* MemoTimeFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0640C962CC46F300089DF6F /* MemoTimeFilter.swift */; };
+		B09A1D0C2CC58FFC001E5A20 /* MemoDateFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09A1D0B2CC58FFC001E5A20 /* MemoDateFilter.swift */; };
+		B09A1D0D2CC58FFC001E5A20 /* MemoDateFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09A1D0B2CC58FFC001E5A20 /* MemoDateFilter.swift */; };
+		B09A1D0E2CC58FFC001E5A20 /* MemoDateFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09A1D0B2CC58FFC001E5A20 /* MemoDateFilter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -216,6 +219,7 @@
 		31EE786029B9F3A2005F62D0 /* Highlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Highlighter.swift; sourceTree = "<group>"; };
 		B0640C942CC43C5C0089DF6F /* InAppBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppBrowserView.swift; sourceTree = "<group>"; };
 		B0640C962CC46F300089DF6F /* MemoTimeFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoTimeFilter.swift; sourceTree = "<group>"; };
+		B09A1D0B2CC58FFC001E5A20 /* MemoDateFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDateFilter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -432,6 +436,7 @@
 		19F31BF928C3E990000C5207 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				B09A1D0B2CC58FFC001E5A20 /* MemoDateFilter.swift */,
 				B0640C962CC46F300089DF6F /* MemoTimeFilter.swift */,
 				19F31BFA28C3E9B2000C5207 /* Memo.swift */,
 				199A657C28C4761100C39994 /* Usage.swift */,
@@ -617,6 +622,7 @@
 				191339CA291D7675001F2B2E /* Usage.swift in Sources */,
 				191339D2291D7785001F2B2E /* Date.swift in Sources */,
 				191339CE291D76BD001F2B2E /* Constants.swift in Sources */,
+				B09A1D0C2CC58FFC001E5A20 /* MemoDateFilter.swift in Sources */,
 				191339DC291D8F15001F2B2E /* MemoryWidget.swift in Sources */,
 				191339CF291D7748001F2B2E /* Heatmap.swift in Sources */,
 				191339D0291D774B001F2B2E /* HeatmapStat.swift in Sources */,
@@ -655,6 +661,7 @@
 				1919FBE729CF77C900FEF570 /* ExploreMemoCard.swift in Sources */,
 				193938DC29CF682D0027939F /* MemoCardContent.swift in Sources */,
 				195E5D7128C70A3800784EF5 /* HeatmapStat.swift in Sources */,
+				B09A1D0D2CC58FFC001E5A20 /* MemoDateFilter.swift in Sources */,
 				19E1C5C028C5191D0072CEEF /* MemoInput.swift in Sources */,
 				194B273328C3973400A48675 /* ContentView.swift in Sources */,
 				193AA8A728CD9ED700FF7EB6 /* URL.swift in Sources */,
@@ -684,6 +691,7 @@
 				B0640C982CC46F300089DF6F /* MemoTimeFilter.swift in Sources */,
 				19B5CFFD2939BC1300140294 /* Constants.swift in Sources */,
 				19B5CFFF2939BC2F00140294 /* Memo.swift in Sources */,
+				B09A1D0E2CC58FFC001E5A20 /* MemoDateFilter.swift in Sources */,
 				1907559A2B66514700451E6D /* TagVisitor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
