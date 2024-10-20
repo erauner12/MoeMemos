@@ -9,6 +9,7 @@
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)me.erauner.MoeMemos</string>
+		<string>$(AppIdentifierPrefix)R63D7L5N86.erauner.MoeMemos</string>
 	</array>
 </dict>
 </plist>

@@ -55,11 +55,9 @@ import MemosV0Service
             }
         }
 
-        // Remove users that are no longer in accounts
-        for user in savedUsers {
-            if !accountManager.accounts.contains(where: { $0.key == user.accountKey }) {
-                currentContext.delete(user)
-            }
+        // Remove removed users
+        savedUsers.filter { user in !accountManager.accounts.contains { $0.key == user.accountKey } }.forEach { user in
+            currentContext.delete(user)
         }
         try currentContext.save()
         users = allUsers
@@ -85,7 +83,7 @@ import MemosV0Service
         let (user, accessToken) = try await client.signIn(username: username, password: password)
         guard let accessToken = accessToken, let userId = user.id else { throw MoeMemosError.unsupportedVersion }
         let account = Account.memosV1(host: hostURL.absoluteString, id: "\(userId)", accessToken: accessToken)
-        
+        try currentContext.delete(model: User.self, where: #Predicate<User> { user in user.accountKey == account.key })
         try accountManager.add(account: account)
         try await reloadUsers()
     }
@@ -96,7 +94,7 @@ import MemosV0Service
         let user = try await client.getCurrentUser()
         guard let id = user.remoteId else { throw MoeMemosError.unsupportedVersion }
         let account = Account.memosV1(host: hostURL.absoluteString, id: id, accessToken: accessToken)
-        
+        try currentContext.delete(model: User.self, where: #Predicate<User> { user in user.accountKey == account.key })
         try accountManager.add(account: account)
         try await reloadUsers()
     }
