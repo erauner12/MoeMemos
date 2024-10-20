@@ -14,14 +14,15 @@ struct MemosList: View {
 
     @State private var searchString = ""
     @State private var showingNewPost = false
+    @State private var selectedDateFilter: MemoDateFilter = .all
     @Environment(AccountManager.self) private var accountManager: AccountManager
     @Environment(AccountViewModel.self) var userState: AccountViewModel
     @Environment(MemosViewModel.self) private var memosViewModel: MemosViewModel
     @State private var filteredMemoList: [Memo] = []
-    
+
     var body: some View {
         let defaultMemoVisibility = userState.currentUser?.defaultVisibility ?? .private
-        
+
         ZStack(alignment: .bottomTrailing) {
             List(filteredMemoList, id: \.remoteId) { memo in
                 Section {
@@ -29,7 +30,7 @@ struct MemosList: View {
                 }
             }
             .listStyle(InsetGroupedListStyle())
-            
+
             if tag == nil {
                 Button {
                     showingNewPost = true
@@ -81,6 +82,9 @@ struct MemosList: View {
         .onChange(of: memosViewModel.selectedPinFilter) { _, _ in
             updateFilteredMemoList()
         }
+        .onChange(of: selectedDateFilter) { _, _ in
+            updateFilteredMemoList()
+        }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             Task {
                 if memosViewModel.inited {
@@ -88,19 +92,32 @@ struct MemosList: View {
                 }
             }
         }
+        .toolbar {
+            Menu {
+                Picker("Date Filter", selection: $selectedDateFilter) {
+                    ForEach(MemoDateFilter.allCases) { filter in
+                        Text(filter.displayName).tag(filter)
+                    }
+                }
+            } label: {
+                Label("Date Filter", systemImage: "calendar")
+            }
+        }
     }
-    
+
     private func updateFilteredMemoList() {
         let timeFilteredMemos = memosViewModel.filteredMemos(tag: tag)
-        
+
+        let dateFilteredMemos = filterMemosByDate(memos: timeFilteredMemos)
+
         if searchString.isEmpty {
-            filteredMemoList = timeFilteredMemos
+            filteredMemoList = dateFilteredMemos
         } else {
-            filteredMemoList = timeFilteredMemos.filter { memo in
+            filteredMemoList = dateFilteredMemos.filter { memo in
                 memo.content.localizedCaseInsensitiveContains(searchString)
             }
         }
-        
+
         // Sort memos: pinned first, then by creation date
         filteredMemoList.sort { (memo1, memo2) in
             if memo1.pinned == true && memo2.pinned != true {
@@ -109,6 +126,19 @@ struct MemosList: View {
                 return false
             } else {
                 return memo1.createdAt > memo2.createdAt
+            }
+        }
+    }
+
+    private func filterMemosByDate(memos: [Memo]) -> [Memo] {
+        let (startDate, endDate) = selectedDateFilter.dateRange()
+        return memos.filter { memo in
+            if let start = startDate, let end = endDate {
+                return memo.createdAt >= start && memo.createdAt < end
+            } else if let start = startDate {
+                return memo.createdAt >= start
+            } else {
+                return true
             }
         }
     }
