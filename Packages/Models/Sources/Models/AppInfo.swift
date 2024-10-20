@@ -10,10 +10,13 @@ import Observation
 import StoreKit
 import SwiftData
 import Factory
+import os
 
 @Observable public class AppInfo {
     public static let groupContainerIdentifier = "group.me.erauner.MoeMemos"
     public static let keychainAccessGroupName = "R63D7L5N86.me.erauner.MoeMemos"
+    
+    private static let logger = Logger(subsystem: "me.erauner.MoeMemos", category: "AppInfo")
     
     public let modelContext: ModelContext
     
@@ -23,6 +26,9 @@ import Factory
             configurations: .init(groupContainer: .identifier(AppInfo.groupContainerIdentifier))
         )
         modelContext = ModelContext(container)
+        
+        Self.logger.info("AppInfo initialized with group container: \(AppInfo.groupContainerIdentifier)")
+        Self.logger.info("Keychain access group: \(AppInfo.keychainAccessGroupName)")
     }
     
     @ObservationIgnored private lazy var region = SKPaymentQueue.default().storefront?.countryCode

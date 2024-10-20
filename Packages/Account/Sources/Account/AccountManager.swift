@@ -9,8 +9,11 @@ import Foundation
 import SwiftUI
 import Models
 import Factory
+import os
 
 @Observable public final class AccountManager {
+    private static let logger = Logger(subsystem: "me.erauner.MoeMemos", category: "AccountManager")
+    
     @ObservationIgnored @AppStorage("currentAccountKey", store: UserDefaults(suiteName: AppInfo.groupContainerIdentifier))
     private var currentAccountKey: String = ""
     @ObservationIgnored public private(set) var currentService: RemoteService?
@@ -34,8 +37,10 @@ import Factory
         accounts = Account.retriveAll()
         if !currentAccountKey.isEmpty, let currentAccount = accounts.first(where: { $0.key == currentAccountKey }) {
             self.currentAccount = currentAccount
+            Self.logger.info("Initialized with existing current account: \(self.currentAccountKey)")
         } else {
             self.currentAccount = accounts.last
+            Self.logger.info("Initialized with last account as current account: \(String(describing: self.accounts.last?.key))")
         }
     }
     
@@ -43,6 +48,7 @@ import Factory
         try account.save()
         accounts = Account.retriveAll()
         currentAccount = account
+        Self.logger.info("Added new account: \(account.key)")
     }
     
     internal func delete(account: Account) {
