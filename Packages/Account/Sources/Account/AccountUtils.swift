@@ -37,3 +37,21 @@ func detectMemosVersion(hostURL: URL) async throws -> MemosVersion {
     }
     throw MoeMemosError.unsupportedVersion
 }
+public func generateMemoURL(for memo: Memo, account: Account) -> URL? {
+    guard let host = account.host, let uid = memo.uid else {
+        return nil
+    }
+    return URL(string: "\(host)/m/\(uid)")
+}
+
+extension Account {
+    public var host: String? {
+        switch self {
+        case .memosV0(host: let host, id: _, accessToken: _),
+             .memosV1(host: let host, id: _, accessToken: _):
+            return host
+        case .local:
+            return nil
+        }
+    }
+}

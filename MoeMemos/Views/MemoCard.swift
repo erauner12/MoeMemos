@@ -10,6 +10,7 @@ import UniformTypeIdentifiers
 import MarkdownUI
 import Models
 import WebKit
+import Account
 
 @MainActor
 struct MemoCard: View {
@@ -17,6 +18,7 @@ struct MemoCard: View {
     let defaultMemoVisilibity: MemoVisibility?
 
     @Environment(MemosViewModel.self) private var memosViewModel: MemosViewModel
+    @Environment(AccountManager.self) private var accountManager: AccountManager
     @Environment(\.openURL) private var openURL
     @State private var showingEdit = false
     @State private var showingDeleteConfirmation = false
@@ -188,17 +190,16 @@ struct MemoCard: View {
         errorMessage = nil
         do {
             let fetchedMemo = try await memosViewModel.getMemo(remoteId: remoteId)
-            guard let uid = fetchedMemo.uid else {
-                errorMessage = "Memo UID not found"
+            guard let currentAccount = accountManager.currentAccount else {
+                errorMessage = "No active account"
                 isLoading = false
                 return
             }
-            let urlString = "https://workmemos.erauner.synology.me/m/\(uid)"
-            if let url = URL(string: urlString) {
+            if let url = generateMemoURL(for: fetchedMemo, account: currentAccount) {
                 inAppBrowserURL = url
                 showingInAppBrowser = true
             } else {
-                errorMessage = "Invalid URL"
+                errorMessage = "Failed to generate memo URL"
             }
         } catch {
             errorMessage = "Failed to fetch memo details: \(error.localizedDescription)"

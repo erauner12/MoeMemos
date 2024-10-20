@@ -8,6 +8,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 import Models
+import Account
 
 @MainActor
 struct ArchivedMemoCard: View {
@@ -15,6 +16,7 @@ struct ArchivedMemoCard: View {
     let archivedViewModel: ArchivedMemoListViewModel
 
     @Environment(MemosViewModel.self) private var memosViewModel: MemosViewModel
+    @Environment(AccountManager.self) private var accountManager: AccountManager
     @Environment(\.openURL) private var openURL: OpenURLAction   
     @State private var showingDeleteConfirmation = false
 
@@ -84,8 +86,8 @@ struct ArchivedMemoCard: View {
         }
         
         Button {
-            // if let url = URL(string: "\(memosServerURL)/m/\(memo.uid)") {
-            if let url = URL(string: "https://workmemos.erauner.synology.me/m/\(memo.remoteId ?? "")") {
+            if let currentAccount = accountManager.currentAccount,
+               let url = generateMemoURL(for: memo, account: currentAccount) {
                 openURL(url)
             }
         } label: {
