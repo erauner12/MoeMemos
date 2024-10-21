@@ -15,7 +15,7 @@ struct MemosList: View {
     @State private var searchString = ""
     @State private var showingNewPost = false
     @State private var selectedDateFilter: MemoDateFilter = .today
-    @State private var selectedTimeFilter: MemoTimeFilter = .modifiedToday
+    @State private var selectedTimeFilter: MemoTimeFilter = .all
     @State private var selectedPinFilter: MemoPinFilter = .all
     @State private var selectedPinnedDateFilter: PinnedMemoDateFilter = .lastSevenDays
     @State private var hasTaskList = false
@@ -108,19 +108,29 @@ struct MemosList: View {
 
     private var sortMenu: some View {
         Form {
-            Picker("Sort By", selection: $sortOption) {
-                ForEach(MemoSortOption.allCases) { option in
-                    Text(option.displayName).tag(option)
+            Section(header: Text("Sorting Options")) {
+                Picker("Sort By", selection: $sortOption) {
+                    ForEach(MemoSortOption.allCases) { option in
+                        Text(option.displayName).tag(option)
+                    }
                 }
-            }
-            
-            Toggle("Prioritize Pinned Memos", isOn: .init(
-                get: { memosViewModel.prioritizePinnedMemos },
-                set: { newValue in
-                    memosViewModel.togglePrioritizePinnedMemos()
+                .onChange(of: sortOption) { _ in
                     updateFilteredMemoList()
                 }
-            ))
+                
+                Toggle("Prioritize Pinned Memos", isOn: .init(
+                    get: { memosViewModel.prioritizePinnedMemos },
+                    set: { newValue in
+                        memosViewModel.togglePrioritizePinnedMemos()
+                        updateFilteredMemoList()
+                    }
+                ))
+            }
+            
+            Section(header: Text("Current Sorting")) {
+                Text(sortOption.displayName)
+                    .foregroundColor(.secondary)
+            }
         }
         .padding()
     }
