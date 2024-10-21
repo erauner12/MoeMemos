@@ -14,9 +14,10 @@ struct MemosList: View {
 
     @State private var searchString = ""
     @State private var showingNewPost = false
-    @State private var selectedDateFilter: MemoDateFilter = .all
-    @State private var selectedTimeFilter: MemoTimeFilter = .all
+    @State private var selectedDateFilter: MemoDateFilter = .today
+    @State private var selectedTimeFilter: MemoTimeFilter = .modifiedToday
     @State private var selectedPinFilter: MemoPinFilter = .all
+    @State private var selectedPinnedDateFilter: PinnedMemoDateFilter = .lastSevenDays
     @State private var hasTaskList = false
     @State private var hasIncompleteTasks = false
     @Environment(AccountManager.self) private var accountManager: AccountManager
@@ -109,6 +110,13 @@ struct MemosList: View {
                     Text(filter.displayName).tag(filter)
                 }
             }
+            
+            Picker("Pinned Memo Date Filter", selection: $selectedPinnedDateFilter) {
+                ForEach(PinnedMemoDateFilter.allCases) { filter in
+                    Text(filter.displayName).tag(filter)
+                }
+            }
+            
             Toggle("Has Task List", isOn: $hasTaskList)
             Toggle("Has Incomplete Tasks", isOn: $hasIncompleteTasks)
         } label: {
@@ -119,11 +127,17 @@ struct MemosList: View {
     private func updateFilteredMemoList() {
         var filteredMemos = memosViewModel.memoList
 
-        // Apply date filter
+        // Apply date filter (now handles pinned and unpinned memos differently)
         filteredMemos = filterMemosByDate(memos: filteredMemos)
         
-        // Apply time filter
-        filteredMemos = filterMemosByTime(memos: filteredMemos)
+        // Apply time filter (only for unpinned memos)
+        filteredMemos = filteredMemos.filter { memo in
+            if memo.pinned {
+                return true
+            } else {
+                return filterMemosByTime(memos: [memo]).count > 0
+            }
+        }
         
         // Apply pin filter
         filteredMemos = filterMemosByPin(memos: filteredMemos)
@@ -155,7 +169,7 @@ struct MemosList: View {
             } else if memo1.pinned != true && memo2.pinned == true {
                 return false
             } else {
-                return memo1.createdAt > memo2.createdAt
+                return memo1.updatedAt > memo2.updatedAt
             }
         }
         
@@ -192,13 +206,27 @@ struct MemosList: View {
 
     private func filterMemosByDate(memos: [Memo]) -> [Memo] {
         let (startDate, endDate) = selectedDateFilter.dateRange()
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        
         return memos.filter { memo in
-            if let start = startDate, let end = endDate {
-                return memo.createdAt >= start && memo.createdAt < end
-            } else if let start = startDate {
-                return memo.createdAt >= start
+            if memo.pinned {
+                switch selectedPinnedDateFilter {
+                case .showAll:
+                    return true
+                case .lastThreeDays:
+                    return calendar.date(byAdding: .day, value: -3, to: today)! <= memo.updatedAt
+                case .lastSevenDays:
+                    return calendar.date(byAdding: .day, value: -7, to: today)! <= memo.updatedAt
+                }
             } else {
-                return true
+                if let start = startDate, let end = endDate {
+                    return memo.createdAt >= start && memo.createdAt < end
+                } else if let start = startDate {
+                    return memo.createdAt >= start
+                } else {
+                    return true
+                }
             }
         }
     }

@@ -110,3 +110,22 @@ enum MemoPinFilter: String, CaseIterable, Identifiable {
         }
     }
 }
+
+enum PinnedMemoDateFilter: String, CaseIterable, Identifiable {
+    case showAll
+    case lastThreeDays
+    case lastSevenDays
+    
+    var id: String { self.rawValue }
+    
+    var displayName: LocalizedStringKey {
+        switch self {
+        case .showAll:
+            return "memo.pinned_date_filter.show_all"
+        case .lastThreeDays:
+            return "memo.pinned_date_filter.last_three_days"
+        case .lastSevenDays:
+            return "memo.pinned_date_filter.last_seven_days"
+        }
+    }
+}

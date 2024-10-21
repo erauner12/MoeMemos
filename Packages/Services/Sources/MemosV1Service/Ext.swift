@@ -9,6 +9,7 @@ import Foundation
 import Models
 
 typealias MemosV1Memo = Components.Schemas.v1Memo
+typealias v1MemoProperty = Components.Schemas.v1MemoProperty
 typealias MemosV1Resource = Components.Schemas.v1Resource
 typealias MemosV1Visibility = Components.Schemas.v1Visibility
 public typealias MemosV1User = Components.Schemas.v1User
