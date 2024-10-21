@@ -20,6 +20,9 @@ struct MemosList: View {
     @State private var selectedPinnedDateFilter: PinnedMemoDateFilter = .lastSevenDays
     @State private var hasTaskList = false
     @State private var hasIncompleteTasks = false
+    @State private var sortOption: MemoSortOption = .updatedAtDesc
+    @State private var showSortOptions = false
+    @State private var showFilterOptions = false
     @Environment(AccountManager.self) private var accountManager: AccountManager
     @Environment(AccountViewModel.self) var userState: AccountViewModel
     @Environment(MemosViewModel.self) private var memosViewModel: MemosViewModel
@@ -56,7 +59,19 @@ struct MemosList: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                filterMenu
+                Button(action: { showSortOptions = true }) {
+                    Label("Sort", systemImage: "arrow.up.arrow.down.circle")
+                }
+                .popover(isPresented: $showSortOptions) {
+                    sortMenu
+                }
+                
+                Button(action: { showFilterOptions = true }) {
+                    Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
+                }
+                .popover(isPresented: $showFilterOptions) {
+                    filterMenu
+                }
             }
         }
     }
@@ -91,8 +106,27 @@ struct MemosList: View {
         }
     }
 
+    private var sortMenu: some View {
+        Form {
+            Picker("Sort By", selection: $sortOption) {
+                ForEach(MemoSortOption.allCases) { option in
+                    Text(option.displayName).tag(option)
+                }
+            }
+            
+            Toggle("Prioritize Pinned Memos", isOn: .init(
+                get: { memosViewModel.prioritizePinnedMemos },
+                set: { newValue in
+                    memosViewModel.togglePrioritizePinnedMemos()
+                    updateFilteredMemoList()
+                }
+            ))
+        }
+        .padding()
+    }
+
     private var filterMenu: some View {
-        Menu {
+        Form {
             Picker("Date Filter", selection: $selectedDateFilter) {
                 ForEach(MemoDateFilter.allCases) { filter in
                     Text(filter.displayName).tag(filter)
@@ -119,43 +153,27 @@ struct MemosList: View {
             
             Toggle("Has Task List", isOn: $hasTaskList)
             Toggle("Has Incomplete Tasks", isOn: $hasIncompleteTasks)
-        } label: {
-            Label("Filters", systemImage: "line.3.horizontal.decrease.circle")
         }
+        .padding()
     }
 
     private func updateFilteredMemoList() {
         var filteredMemos = memosViewModel.memoList
 
-        // Apply date filter (now handles pinned and unpinned memos differently)
+        // Apply filters
         filteredMemos = filterMemosByDate(memos: filteredMemos)
-        
-        // Apply time filter (only for unpinned memos)
-        filteredMemos = filteredMemos.filter { memo in
-            if memo.pinned {
-                return true
-            } else {
-                return filterMemosByTime(memos: [memo]).count > 0
-            }
-        }
-        
-        // Apply pin filter
+        filteredMemos = filterMemosByTime(memos: filteredMemos)
         filteredMemos = filterMemosByPin(memos: filteredMemos)
-        
-        // Apply tag filter
         filteredMemos = filterMemosByTag(memos: filteredMemos)
         
-        // Apply task list filter
         if hasTaskList {
             filteredMemos = filteredMemos.filter { $0.hasTaskList() }
         }
         
-        // Apply incomplete tasks filter
         if hasIncompleteTasks {
             filteredMemos = filteredMemos.filter { $0.hasIncompleteTasks() }
         }
         
-        // Apply search filter
         if !searchString.isEmpty {
             filteredMemos = filteredMemos.filter { memo in
                 memo.content.localizedCaseInsensitiveContains(searchString)
@@ -164,16 +182,26 @@ struct MemosList: View {
         
         // Sort the filtered memos
         filteredMemos.sort { (memo1, memo2) in
-            if memo1.pinned == true && memo2.pinned != true {
-                return true
-            } else if memo1.pinned != true && memo2.pinned == true {
-                return false
-            } else {
+            if memosViewModel.prioritizePinnedMemos {
+                if memo1.pinned && !memo2.pinned {
+                    return true
+                } else if !memo1.pinned && memo2.pinned {
+                    return false
+                }
+            }
+            
+            switch sortOption {
+            case .createdAtAsc:
+                return memo1.createdAt < memo2.createdAt
+            case .createdAtDesc:
+                return memo1.createdAt > memo2.createdAt
+            case .updatedAtAsc:
+                return memo1.updatedAt < memo2.updatedAt
+            case .updatedAtDesc:
                 return memo1.updatedAt > memo2.updatedAt
             }
         }
         
-        // Assign the final filtered and sorted list
         filteredMemoList = filteredMemos
     }
 

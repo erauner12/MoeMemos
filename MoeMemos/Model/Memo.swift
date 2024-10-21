@@ -9,6 +9,28 @@ import Foundation
 import SwiftUI
 import Models
 
+enum MemoSortOption: String, CaseIterable, Identifiable {
+    case createdAtAsc
+    case createdAtDesc
+    case updatedAtAsc
+    case updatedAtDesc
+    
+    var id: String { self.rawValue }
+    
+    var displayName: LocalizedStringKey {
+        switch self {
+        case .createdAtAsc:
+            return "memo.sort.created_at_asc"
+        case .createdAtDesc:
+            return "memo.sort.created_at_desc"
+        case .updatedAtAsc:
+            return "memo.sort.updated_at_asc"
+        case .updatedAtDesc:
+            return "memo.sort.updated_at_desc"
+        }
+    }
+}
+
 extension MemoVisibility {
     var title: LocalizedStringKey {
         switch self {

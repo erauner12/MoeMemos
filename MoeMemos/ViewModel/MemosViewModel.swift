@@ -16,8 +16,13 @@ import Observation
 class MemosViewModel {
     @ObservationIgnored
     @Injected(\.accountManager) private var accountManager
+    var prioritizePinnedMemos: Bool = false
     @ObservationIgnored
     var service: RemoteService { get throws { try accountManager.mustCurrentService } }
+
+    init() {
+        prioritizePinnedMemos = UserDefaults.standard.bool(forKey: "prioritizePinnedMemos")
+    }
 
     var memoList: [Memo] = [] {
         didSet {
@@ -109,6 +114,12 @@ class MemosViewModel {
             tag.name == name
         }
         nestedTags = NestedTag.fromTagList(tags.map { $0.name })
+    }
+
+    @MainActor
+    func togglePrioritizePinnedMemos() {
+        prioritizePinnedMemos.toggle()
+        UserDefaults.standard.set(prioritizePinnedMemos, forKey: "prioritizePinnedMemos")
     }
 
     @MainActor
